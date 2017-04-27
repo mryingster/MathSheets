@@ -1,6 +1,12 @@
 #!/usr/bin/python
 import os, csv, platform, sys, random, datetime
 
+# Globals
+operations = {"multiply" : "x",
+              "subtract" : "-",
+              "add"      : "+"}
+#              "divide"   : "/"}
+
 def error(msg):
     print("ERROR: %s" % msg)
     quit(1)
@@ -37,62 +43,75 @@ def createPDFFile(svgFile):
     subprocess.call([inkscape, os.path.join(path, svgFile), "--export-pdf=%s" % os.path.join(path, pdfFile), "--without-gui"])
     return pdfFile
 
-debug = False
+def generateProblem(operation, limit1 = 20):
+    if operation in ["multiply", "divide"]:
+        limit1 /= 2
 
-# Make sure template is available
-file = "template.svg"
-if not os.path.isfile(file):
-    error("Unable to locate template file, '%s'." % file)
+    limit2 = limit1
+    int1 = random.randint(0, limit1)
 
-# Read file in
-buffer = readFile(file)
+    if operation == "subtract":
+        limit2 = int1 - 1
 
-# Generate 12 problems, modify buffer
-for i in range(1, 13):
-    operations = ["x", "-", "+"]
-    operation = operations[random.randint(0,len(operations)-1)]
-    limit1 = 20
-    limit2 = 20
-    if operation == "x":
-        limit1 = 10
-        limit2 = 5
-    int1 = random.randint(0, limit1 + 1)
-    if operation == "-":
-        limit2 = int1-1
-    int2 = random.randint(0, limit2 + 1)
+    int2 = random.randint(0, limit2)
 
-    if operation == "x":
+    if   operation == "multiply":
         answer = int1 * int2;
-    elif operation == "-":
+    elif operation == "subtract":
         answer = int1 - int2;
-    elif operation == "+":
+    elif operation == "add":
         answer = int1 + int2;
-    elif operation == "/":
-        answer = int1 / int2;
+    elif operation == "divide":
+        answer = int1
+        int1 = answer * int2;
 
-    # Debug
-    if debug == True:
-        print("%d %s %d = %d" % (int1, operation, int2, answer))
+    return int1, int2, answer
 
-    output = ""
-    for line in buffer.split():
-        line = line.replace("$date", datetime.datetime.now().strftime("%m/%d/%y")) if "$date" in line else line
-        line = line.replace("$%dT" % i, str(int1)) if "$%dT" % i in line else line 
-        line = line.replace("$%dB" % i, str(int2)) if "$%dB" % i in line else line 
-        line = line.replace("$%dO" % i, operation) if "$%dO" % i in line else line
-        line = line.replace("$%dA" % i, str(answer)) if "$%dA" % i in line else line  
-        output += line+"\n"
-    buffer = output
+def main(argv):
+    debug = False
 
-# Write SVG File (tmp)
-svgFile = writeSVGFile(buffer)
+    # Make sure template is available
+    file = "template.svg"
+    if not os.path.isfile(file):
+        error("Unable to locate template file, '%s'." % file)
 
-# Create PDF using Inkscape
-if not createPDFFile(svgFile):
-    error("Unable to create PDF File.")
+    # Read file in
+    buffer = readFile(file)
 
-# Delete SVG File
-try:
-    os.remove(svgFile)
-except:
-    error("Unable to remove temporary SVG file.")
+    # Generate 12 problems, modify buffer
+    for i in range(1, 13):
+        operation = operations.keys()[random.randint(0,len(operations)-1)]
+        sign = operations[operation]
+
+        int1, int2, answer = generateProblem(operation, 20)
+
+        # Debug
+        if debug == True:
+            print("%d %s %d = %d" % (int1, sign, int2, answer))
+
+        output = ""
+        for line in buffer.split():
+            line = line.replace("$date", datetime.datetime.now().strftime("%m/%d/%y")) if "$date" in line else line
+            line = line.replace("$%dT" % i, str(int1)) if "$%dT" % i in line else line 
+            line = line.replace("$%dB" % i, str(int2)) if "$%dB" % i in line else line 
+            line = line.replace("$%dO" % i, sign) if "$%dO" % i in line else line
+            line = line.replace("$%dA" % i, str(answer)) if "$%dA" % i in line else line  
+            output += line+"\n"
+        buffer = output
+
+    # Write SVG File (tmp)
+    svgFile = writeSVGFile(buffer)
+
+    # Create PDF using Inkscape
+    if not createPDFFile(svgFile):
+        error("Unable to create PDF File.")
+
+    # Delete SVG File
+    try:
+        os.remove(svgFile)
+    except:
+        error("Unable to remove temporary SVG file.")
+
+
+if __name__ == "__main__":
+    main(*sys.argv)
