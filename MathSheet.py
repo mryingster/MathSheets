@@ -11,6 +11,24 @@ def error(msg):
     print("ERROR: %s" % msg)
     quit(1)
 
+def help():
+    #     0         10        20        30        40        50        60        70        80
+    #     |----|----|----|----|----|----|----|----|----|----|----|----|----|----|----|----|
+    print("Math Sheet")
+    print("")
+    print("Description")
+    print("    This utility creates random math problem with answers in a printable PDF")
+    print("    document.")
+    print("")
+    print("Usage")
+    print("    ./MathSheet.py <options>")
+    print("")
+    print("Options")
+    print("    -h   Show this help page")
+    print("    -n <n> Specify number of problems to put on the sheet of paper")
+    print("    -m <n> Specify the maximum size of integers used")
+    print("")
+
 def writeSVGFile(outBuffer):
     tempFileName = "tmp.svg"
     with open(tempFileName, 'wb') as output:
@@ -244,6 +262,9 @@ def main(argv):
             numberLimit = int(argv[argv.index("-m") + 1])
         except:
             error("Bad argument value, '-m'.")
+    if "-h" in argv:
+        help()
+        quit()
 
     # Figure out spacing
     columns = math.floor(math.sqrt(numberOfProblems))
