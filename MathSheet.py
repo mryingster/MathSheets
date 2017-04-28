@@ -230,7 +230,8 @@ def generateProblem(operation, limit1 = 20):
 
 def main(argv):
     debug = False
-    numberOfProblems = 20
+    numberOfProblems = 16
+    numberLimit = 20
 
     # Parse Options
     if "-n" in argv:
@@ -238,6 +239,11 @@ def main(argv):
             numberOfProblems = int(argv[argv.index("-n") + 1])
         except:
             error("Bad argument value, '-n'.")
+    if "-m" in argv:
+        try:
+            numberLimit = int(argv[argv.index("-m") + 1])
+        except:
+            error("Bad argument value, '-m'.")
 
     # Figure out spacing
     columns = math.floor(math.sqrt(numberOfProblems))
@@ -254,7 +260,7 @@ def main(argv):
         operation = operations.keys()[random.randint(0,len(operations)-1)]
         sign = operations[operation]
         problem = i + 1
-        int1, int2, answer = generateProblem(operation, 20)
+        int1, int2, answer = generateProblem(operation, numberLimit)
 
         # Debug
         if debug == True:
