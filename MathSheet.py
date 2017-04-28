@@ -34,34 +34,34 @@ def createPDFFile(svgFile):
     subprocess.call([inkscape, os.path.join(path, svgFile), "--export-pdf=%s" % os.path.join(path, pdfFile), "--without-gui"])
     return pdfFile
 
-def createTextBox(x, y, value, size, rightAlign=False):
+def createTextBox(x, y, value, size, color="#000000", rightAlign=False):
     align = "text-align:end;text-anchor:end;" if rightAlign == True else ""
 
     textObject = """<text
         xml:space="preserve"
-        style="font-style:normal;font-weight:normal;font-size:%spx;font-family:sans-serif;fill:#000000;fill-opacity:1;%s"
+        style="font-style:normal;font-weight:normal;font-size:%spx;font-family:sans-serif;fill:%s;fill-opacity:1;%s"
         x="%s"
         y="%s"><tspan
             sodipodi:role="line"
             x="%s"
             y="%s"
             style="font-size:%spx;%s">%s</tspan></text>
-""" % (size, align, x, y, x, y, size, align, value)
+""" % (size, color, align, x, y, x, y, size, align, value)
     return textObject
 
 def generateSVGProblem(number, int1, int2, operation, x, y):
     fontSize = 20
-    pnumber  = createTextBox(x+10,  y,    "%d." % number, fontSize)
-    topInt   = createTextBox(x+100, y+10, int1,      fontSize, True)
-    botInt   = createTextBox(x+100, y+35, int2,      fontSize, True)
-    operand  = createTextBox(x+25,  y+35, operation, fontSize)
+    pnumber  = createTextBox(x,    y,    "%d." % number, fontSize, "#808080")
+    topInt   = createTextBox(x+75, y+10, int1,           fontSize, "#000000", True)
+    botInt   = createTextBox(x+75, y+35, int2,           fontSize, "#000000", True)
+    operand  = createTextBox(x+5,  y+35, operation,      fontSize, "#000000")
 
     line = """    <path
        style="fill:none;fill-rule:evenodd;stroke:#000000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
        d="m %s,%s 80,0"
        id="path4162-8-0-5"
        inkscape:connector-curvature="0" />
-""" % (x+20, y+40)
+""" % (x, y+40)
 
     rectangle = """    <rect
        style="opacity:1;fill:none;fill-opacity:1;stroke:#808080;stroke-width:1;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
@@ -70,14 +70,14 @@ def generateSVGProblem(number, int1, int2, operation, x, y):
        height="30"
        x="%s"
        y="%s" />
-""" % (x+20, y+45)
+""" % (x, y+45)
 
     problem = "%s\n%s\n%s\n%s\n%s\n%s\n" % (pnumber, topInt, botInt, operand, line, rectangle)
     return problem
 
 def generateSVGAnswer(number, answer, x, y):
-    numberText = createTextBox(x + 40, y, "%d." % number, 20, True)
-    answerText = createTextBox(x + 50, y, answer, 20)
+    numberText = createTextBox(x + 40, y, "%d." % number, 20, "#808080", True)
+    answerText = createTextBox(x + 50, y, answer, 20, "#000000")
     return "%s\n%s" % (numberText, answerText)
 
 def generateSVGDocument(date, content, answers):
@@ -140,12 +140,12 @@ def generateSVGDocument(date, content, answers):
     <text
       xml:space="preserve"
       style="font-style:normal;font-weight:normal;font-size:40px;line-height:125%;font-family:sans-serif;fill:#000000;fill-opacity:1;"
-      x="84"
-      y="152">
+      x="80"
+      y="150">
     <tspan
       sodipodi:role="line"
-      x="84"
-      y="152"
+      x="80"
+      y="150"
       style="font-size:17.5px">Date: """+date+"""</tspan>
     </text>
 
@@ -172,7 +172,7 @@ def generateSVGAnswerBlock(numberOfProblems, answers):
     <tspan
       sodipodi:role="line"
       id="tspan4283"
-      x="85"
+      x="80"
       y="840"
       style="font-size:20px">Answers</tspan>
     </text>
@@ -242,7 +242,7 @@ def main(argv):
     # Figure out spacing
     columns = math.floor(math.sqrt(numberOfProblems))
     colWidthProblem = 670 / columns
-    colWidthAnswer = 360 / columns
+    colWidthAnswer = 450 / columns
     rows = math.ceil(numberOfProblems / columns)
     rowHeightProblem = 550 / rows
     rowHeightAnswer = 30
