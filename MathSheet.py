@@ -51,17 +51,17 @@ def createTextBox(x, y, value, size, rightAlign=False):
 
 def generateSVGProblem(number, int1, int2, operation, x, y):
     fontSize = 20
-    pnumber  = createTextBox(x,     y,    "%d." % number, fontSize)
-    topInt   = createTextBox(x+100, y+25, int1,      fontSize, True)
-    botInt   = createTextBox(x+100, y+50, int2,      fontSize, True)
-    operand  = createTextBox(x+25,  y+50, operation, fontSize)
+    pnumber  = createTextBox(x+10,  y,    "%d." % number, fontSize)
+    topInt   = createTextBox(x+100, y+10, int1,      fontSize, True)
+    botInt   = createTextBox(x+100, y+35, int2,      fontSize, True)
+    operand  = createTextBox(x+25,  y+35, operation, fontSize)
 
     line = """    <path
        style="fill:none;fill-rule:evenodd;stroke:#000000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
        d="m %s,%s 80,0"
        id="path4162-8-0-5"
        inkscape:connector-curvature="0" />
-""" % (x+20, y+55)
+""" % (x+20, y+40)
 
     rectangle = """    <rect
        style="opacity:1;fill:none;fill-opacity:1;stroke:#808080;stroke-width:1;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
@@ -70,7 +70,7 @@ def generateSVGProblem(number, int1, int2, operation, x, y):
        height="30"
        x="%s"
        y="%s" />
-""" % (x+20, y+60)
+""" % (x+20, y+45)
 
     problem = "%s\n%s\n%s\n%s\n%s\n%s\n" % (pnumber, topInt, botInt, operand, line, rectangle)
     return problem
@@ -81,8 +81,7 @@ def generateSVGAnswer(number, answer, x, y):
     return "%s\n%s" % (numberText, answerText)
 
 def generateSVGDocument(date, content, answers):
-    document = """
-<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+    document = """<?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <!-- Created with Inkscape (http://www.inkscape.org/) -->
 <svg
    xmlns:dc="http://purl.org/dc/elements/1.1/"
@@ -231,7 +230,22 @@ def generateProblem(operation, limit1 = 20):
 
 def main(argv):
     debug = False
-    numberOfProblems = 12
+    numberOfProblems = 20
+
+    # Parse Options
+    if "-n" in argv:
+        try:
+            numberOfProblems = int(argv[argv.index("-n") + 1])
+        except:
+            error("Bad argument value, '-n'.")
+
+    # Figure out spacing
+    columns = math.floor(math.sqrt(numberOfProblems))
+    colWidthProblem = 670 / columns
+    colWidthAnswer = 360 / columns
+    rows = math.ceil(numberOfProblems / columns)
+    rowHeightProblem = 550 / rows
+    rowHeightAnswer = 30
 
     # Generate SVG rendering of problems
     questions = ""
@@ -246,13 +260,13 @@ def main(argv):
         if debug == True:
             print("%d %s %d = %d" % (int1, sign, int2, answer))
 
-        x = (i % 3) * 230 + 80
-        y = math.floor(i / 3) * 150 + 190
+        x = (i % columns) * colWidthProblem + 80
+        y = math.floor(i / columns) * rowHeightProblem + 190
 
         questions += generateSVGProblem(problem, int1, int2, sign, x, y)
 
-        x = (i % 3) * 120 + 80
-        y = math.floor(i / 3) * 30 + 875
+        x = (i % columns) * colWidthAnswer + 80
+        y = math.floor(i / columns) * rowHeightAnswer + 875
 
         answers += generateSVGAnswer(problem, answer, x, y)
 
@@ -274,4 +288,4 @@ def main(argv):
 
 
 if __name__ == "__main__":
-    main(*sys.argv)
+    main(sys.argv)
