@@ -222,24 +222,32 @@ def generateSVGAnswerBlock(numberOfProblems, answers):
       id="path4422"
       inkscape:connector-curvature="0" />"""
 
-def generateProblem(operation, limit1 = 20):
-    if operation in ["multiply", "divide"]:
-        limit1 /= 2
-
-    limit2 = limit1
-    int1 = random.randint(0, limit1)
-
-    if operation == "subtract":
-        limit2 = int1 - 1
-
-    int2 = random.randint(0, limit2)
+def generateProblem(operation, limit = 20, simple = True):
+    int1 = random.randint(1, limit)
+    int2 = random.randint(0, int1)
 
     if   operation == "multiply":
+        int1 %= 13
+        int2 %= 6
         answer = int1 * int2;
+
     elif operation == "subtract":
+        # Keeps from requiring carrying
+        if simple == True:
+            str1 = str(int1)
+            str2 = str(int2)
+            str3 = ""
+            for i in reversed(range(1, len(str2)+1)):
+                if str1[-1 * i] == "0":
+                    str3 = "0"
+                else:
+                    str3 += str(int(str2[-1 * i]) % (int(str1[-1 * i]) + 1))
+        int2 = int(str3)
         answer = int1 - int2;
+
     elif operation == "add":
         answer = int1 + int2;
+
     elif operation == "divide":
         answer = int1
         int1 = answer * int2;
@@ -297,11 +305,12 @@ def main(argv):
 
         answers += generateSVGAnswer(problem, answer, x, y)
 
+    # Create SVG Buffer
     answerBlock = generateSVGAnswerBlock(numberOfProblems, answers)
-    buffer = generateSVGDocument(datetime.datetime.now().strftime("%m/%d/%y"), questions, answerBlock)
+    svgBuffer = generateSVGDocument(datetime.datetime.now().strftime("%m/%d/%y"), questions, answerBlock)
 
     # Write SVG File (tmp)
-    svgFile = writeSVGFile(buffer)
+    svgFile = writeSVGFile(svgBuffer)
 
     # Create PDF using Inkscape
     if not createPDFFile(svgFile):
@@ -312,7 +321,6 @@ def main(argv):
         os.remove(svgFile)
     except:
         error("Unable to remove temporary SVG file.")
-
 
 if __name__ == "__main__":
     main(sys.argv)
