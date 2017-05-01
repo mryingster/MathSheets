@@ -16,5 +16,3 @@ Requires InkScape to convert the SVG output to PDF. Right now, the location of t
 To Do
 -----
 * Make usage of InkScape not based on hardcoded path to BIN
-* Variable limit of number sizes based on arguments
-* Variable type of problems based on arguments

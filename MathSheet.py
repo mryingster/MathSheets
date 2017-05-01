@@ -24,13 +24,14 @@ def help():
     print("    ./MathSheet.py <options>")
     print("")
     print("Options")
-    print("    -h   Show this help page")
-    print("    -n <n> Specify number of problems to put on the sheet of paper")
-    print("    -m <n> Specify the maximum size of integers used")
-    print("    -add Create addition problems")
-    print("    -sub Create subtraction problems")
-    print("    -mul Create multiplication problems")
-    print("    -div Create division problems")
+    print("    -h        Show this help page")
+    print("    -n <num>  Specify number of problems to put on the sheet of paper")
+    print("    -m <num>  Specify the maximum size of integers used")
+    print("    -o <name> Specify cusomt output filename (default is MathSheet.pdf)")
+    print("    -add      Create addition problems")
+    print("    -sub      Create subtraction problems")
+    print("    -mul      Create multiplication problems")
+    print("    -div      Create division problems")
     print("")
 
 def writeSVGFile(outBuffer):
@@ -262,33 +263,42 @@ def main(argv):
     selectedOperations = []
     outputFilename = "MathSheet.pdf"
 
-    # Parse Options
-    if "-n" in argv:
-        try:
-            numberOfProblems = int(argv[argv.index("-n") + 1])
-        except:
-            error("Bad argument value, '-n'.")
-    if "-m" in argv:
-        try:
-            numberLimit = int(argv[argv.index("-m") + 1])
-        except:
-            error("Bad argument value, '-m'.")
-    if "-h" in argv:
-        help()
-        quit()
-    if "-add" in argv:
-        selectedOperations.append("add")
-    if "-sub" in argv:
-        selectedOperations.append("subtract")
-    if "-mul" in argv:
-        selectedOperations.append("multiply")
-    if "-div" in argv:
-        selectedOperations.append("divide")
-    if "-o" in argv:
-        try:
-            outputFilename = argv[argv.index("-o") + 1]
-        except:
-            error("Bad argument value, '-o'.")
+    # Parse Options (Skip first argument)
+    index = 1
+    while index < len(argv):
+        arg = argv[index]
+        if arg == "-h":
+            help()
+            quit()
+        elif arg == "-n":
+            try:
+                index += 1
+                numberOfProblems = int(argv[index])
+            except:
+                error("Bad argument value, "-n".")
+        elif arg == "-m":
+            try:
+                index += 1
+                numberLimit = int(argv[index])
+            except:
+                error("Bad argument value, \"-m\".")
+        elif arg == "-o":
+            try:
+                index += 1
+                outputFilename = argv[index]
+            except:
+                error("Bad argument value, \"-o\".")
+        elif arg == "-add":
+            selectedOperations.append("add")
+        elif arg == "-sub":
+            selectedOperations.append("subtract")
+        elif arg == "-mul":
+            selectedOperations.append("multiply")
+        elif arg == "-div":
+            selectedOperations.append("divide")
+        else:
+            error("Unrecognized argument, \"%s\"" % arg)
+        index += 1
 
     # Make sure operations are selected
     if len(selectedOperations) == 0:
