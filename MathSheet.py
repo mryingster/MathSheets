@@ -4,8 +4,8 @@ import os, csv, platform, sys, random, datetime, math
 # Globals
 operations = {"multiply" : "x",
               "subtract" : "-",
-              "add"      : "+"}
-#              "divide"   : "/"}
+              "add"      : "+",
+              "divide"   : "/"}
 
 def error(msg):
     print("ERROR: %s" % msg)
@@ -27,6 +27,10 @@ def help():
     print("    -h   Show this help page")
     print("    -n <n> Specify number of problems to put on the sheet of paper")
     print("    -m <n> Specify the maximum size of integers used")
+    print("    -add Create addition problems")
+    print("    -sub Create subtraction problems")
+    print("    -mul Create multiplication problems")
+    print("    -div Create division problems")
     print("")
 
 def writeSVGFile(outBuffer):
@@ -258,6 +262,7 @@ def main(argv):
     debug = False
     numberOfProblems = 16
     numberLimit = 20
+    selectedOperations = []
 
     # Parse Options
     if "-n" in argv:
@@ -273,6 +278,18 @@ def main(argv):
     if "-h" in argv:
         help()
         quit()
+    if "-add" in argv:
+        selectedOperations.append("add")
+    if "-sub" in argv:
+        selectedOperations.append("subtract")
+    if "-mul" in argv:
+        selectedOperations.append("multiply")
+    if "-div" in argv:
+        selectedOperations.append("divide")
+
+    # Make sure operations are selected
+    if len(selectedOperations) == 0:
+        selectedOperations = operations.keys()
 
     # Figure out spacing
     columns = math.floor(math.sqrt(numberOfProblems))
@@ -286,7 +303,7 @@ def main(argv):
     questions = ""
     answers = ""
     for i in range(numberOfProblems):
-        operation = operations.keys()[random.randint(0,len(operations)-1)]
+        operation = selectedOperations[random.randint(0,len(selectedOperations)-1)]
         sign = operations[operation]
         problem = i + 1
         int1, int2, answer = generateProblem(operation, numberLimit)
