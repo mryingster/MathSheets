@@ -40,7 +40,7 @@ def writeSVGFile(outBuffer):
             output.write(line)
     return tempFileName
 
-def createPDFFile(svgFile):
+def createPDFFile(svgFile, pdfFile):
     # Verify Inkscape is available
     inkscape = "/Volumes/Documents/Applications Less Used/Inkscape.app/Contents/Resources/script"
     if not os.path.isfile(inkscape):
@@ -49,9 +49,6 @@ def createPDFFile(svgFile):
     # Get current path
     path = os.path.abspath(".")
 
-    # To Do: better naming convention
-    pdfFile = "MathSheet.pdf"
-        
     import subprocess
     subprocess.call([inkscape, os.path.join(path, svgFile), "--export-pdf=%s" % os.path.join(path, pdfFile), "--without-gui"])
     return pdfFile
@@ -263,6 +260,7 @@ def main(argv):
     numberOfProblems = 16
     numberLimit = 20
     selectedOperations = []
+    outputFilename = "MathSheet.pdf"
 
     # Parse Options
     if "-n" in argv:
@@ -286,6 +284,11 @@ def main(argv):
         selectedOperations.append("multiply")
     if "-div" in argv:
         selectedOperations.append("divide")
+    if "-o" in argv:
+        try:
+            outputFilename = argv[argv.index("-o") + 1]
+        except:
+            error("Bad argument value, '-o'.")
 
     # Make sure operations are selected
     if len(selectedOperations) == 0:
@@ -330,7 +333,7 @@ def main(argv):
     svgFile = writeSVGFile(svgBuffer)
 
     # Create PDF using Inkscape
-    if not createPDFFile(svgFile):
+    if not createPDFFile(svgFile, outputFilename):
         error("Unable to create PDF File.")
 
     # Delete SVG File
