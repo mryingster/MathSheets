@@ -41,11 +41,35 @@ def writeSVGFile(outBuffer):
             output.write(line)
     return tempFileName
 
+def findInkscape():
+    inkscapeScriptPath = ""
+    inkscapePath = ""
+
+    # Default Location(s)
+    checkPaths = ["/Applications",
+                  "/Volumes/Documents/Applications Less Used"]
+
+    # Check in default locations for application
+    for path in checkPaths:
+        checkPath = os.path.join(path, "Inkscape.app")
+        if os.path.isdir(checkPath):
+            inkscapePath = checkPath
+            break
+
+    # If not found...
+    if inkscapePath == "":
+        error("Unable to locate Inkscape application")
+
+    # Look for scripting engine
+    scriptPath = "Contents/Resources/script"
+    inkscapeScriptPath = os.path.join(inkscapePath, scriptPath)
+    if not os.path.isfile(inkscapeScriptPath):
+        error("Unable to locate Inkscape Scripting Binary")
+
+    return inkscapeScriptPath
+
 def createPDFFile(svgFile, pdfFile):
-    # Verify Inkscape is available
-    inkscape = "/Volumes/Documents/Applications Less Used/Inkscape.app/Contents/Resources/script"
-    if not os.path.isfile(inkscape):
-        error("Unable to locate Inkscape")
+    inkscape = findInkscape()
 
     # Get current path
     path = os.path.abspath(".")
