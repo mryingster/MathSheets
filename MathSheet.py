@@ -275,7 +275,7 @@ def main(argv):
                 index += 1
                 numberOfProblems = int(argv[index])
             except:
-                error("Bad argument value, "-n".")
+                error("Bad argument value, \"-n\".")
         elif arg == "-m":
             try:
                 index += 1
