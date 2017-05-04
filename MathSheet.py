@@ -28,6 +28,7 @@ def help():
     print("    -n <num>  Specify number of problems to put on the sheet of paper")
     print("    -m <num>  Specify the maximum size of integers used")
     print("    -o <name> Specify cusomt output filename (default is MathSheet.pdf)")
+    print("    -v        Increase verbosity")
     print("    -add      Create addition problems")
     print("    -sub      Create subtraction problems")
     print("    -mul      Create multiplication problems")
@@ -281,7 +282,7 @@ def generateProblem(operation, limit = 20, simple = True):
     return int1, int2, answer
 
 def main(argv):
-    debug = False
+    verbose = False
     numberOfProblems = 16
     numberLimit = 20
     selectedOperations = []
@@ -320,6 +321,8 @@ def main(argv):
             selectedOperations.append("multiply")
         elif arg == "-div":
             selectedOperations.append("divide")
+        elif arg == "-v":
+            verbose = True
         else:
             error("Unrecognized argument, \"%s\"" % arg)
         index += 1
@@ -345,8 +348,8 @@ def main(argv):
         problem = i + 1
         int1, int2, answer = generateProblem(operation, numberLimit)
 
-        # Debug
-        if debug == True:
+        # Print resulting problems
+        if verbose == True:
             print("%d %s %d = %d" % (int1, sign, int2, answer))
 
         x = (i % columns) * colWidthProblem + 80
@@ -365,14 +368,17 @@ def main(argv):
 
     # Write SVG File (tmp)
     svgFile = writeSVGFile(svgBuffer)
+    if verbose == True: print("SVG File, \"%s\", generated." % svgFile)
 
     # Create PDF using Inkscape
     if not createPDFFile(svgFile, outputFilename):
         error("Unable to create PDF File.")
+    if verbose == True: print("PDF File, \"%s\", generated." % outputFilename)
 
     # Delete SVG File
     try:
         os.remove(svgFile)
+        if verbose == True: print("SVG File, \"%s\", deleted." % svgFile)
     except:
         error("Unable to remove temporary SVG file.")
 
