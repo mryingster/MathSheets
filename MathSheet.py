@@ -286,7 +286,8 @@ def main(argv):
     numberOfProblems = 16
     numberLimit = 20
     selectedOperations = []
-    outputFilename = "MathSheet.pdf"
+    #outputFilename = "MathSheet.pdf"
+    outputFilename = ""
 
     # Parse Options (Skip first argument)
     index = 1
@@ -369,6 +370,12 @@ def main(argv):
     # Write SVG File (tmp)
     svgFile = writeSVGFile(svgBuffer)
     if verbose == True: print("SVG File, \"%s\", generated." % svgFile)
+
+    # Create PDF name if none specified using -o option
+    if outputFilename == "":
+        operationString = '_'.join(i[:3] for i in selectedOperations)
+        creationDate = datetime.datetime.now().strftime("%m-%d-%y")
+        outputFilename = "MathSheet_%s_%s.pdf" % (creationDate, operationString)
 
     # Create PDF using Inkscape
     if not createPDFFile(svgFile, outputFilename):
