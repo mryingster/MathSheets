@@ -286,7 +286,6 @@ def main(argv):
     numberOfProblems = 16
     numberLimit = 20
     selectedOperations = []
-    #outputFilename = "MathSheet.pdf"
     outputFilename = ""
 
     # Parse Options (Skip first argument)
