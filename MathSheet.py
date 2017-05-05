@@ -26,7 +26,7 @@ def help():
     print("Options")
     print("    -h        Show this help page")
     print("    -n <num>  Specify number of problems to put on the sheet of paper")
-    print("    -m <num>  Specify the maximum size of integers used")
+    print("    -m <num>  Specify the maximum value for answers")
     print("    -o <name> Specify cusomt output filename (default is MathSheet.pdf)")
     print("    -v        Increase verbosity")
     print("    -add      Create addition problems")
@@ -251,12 +251,12 @@ def generateSVGAnswerBlock(numberOfProblems, answers):
 
 def generateProblem(operation, limit = 20, simple = True):
     int1 = random.randint(1, limit)
-    int2 = random.randint(0, int1)
+    int2 = random.randint(0, limit) % int1
 
     if   operation == "multiply":
         int1 %= 13
         int2 %= 6
-        answer = int1 * int2;
+        answer = int1 * int2
 
     elif operation == "subtract":
         # Keeps from requiring carrying
@@ -273,11 +273,17 @@ def generateProblem(operation, limit = 20, simple = True):
         answer = int1 - int2;
 
     elif operation == "add":
-        answer = int1 + int2;
+        answer = int1
+        tmp = answer - int2
+        if int2 > tmp:
+            int1 = int2
+            int2 = tmp
+        else:
+            int1 = tmp
 
     elif operation == "divide":
         answer = int1
-        int1 = answer * int2;
+        int1 = answer * int2
 
     return int1, int2, answer
 
